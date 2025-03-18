@@ -14,38 +14,39 @@ int main() {
     bool programRunning = true; // Ensures that we are inside the while loop at required times
     int binaryArray[8] = {0}; // The array for the actual binary numbers is stored in this array
     int inputNumber = 0; // The number which the user will input in the "scanf()" below
-    int binaryNumbers = 128; // Used to divide the input number in while for loop ahead!
-    int decimalNumbers = 128;
     char character;
     char inputString[9];
     int outputDecimal = 0;
+    int binaryNumbers = 128; // Used to divide the input number in while for loop ahead!
+    int decimalNumbers = 128;
 
     printf("Welcome to the decimal to binary converter!\n"); // Welcome text!
 
     while (programRunning == true) { // PRIMARY LOOP FOR THE PROGRAM
-        printf("Please choose your designated conversion:\n");
-        printf("[D] - Binary ---> Decimal\n");
-        printf("[B] - Decimal ---> Binary\n:: ");
-        character = getchar();
 
-        if (character == 'D' || 'd') {
-            printf("%c", character);
-            Sleep(2000);
+        outputDecimal = 0;
+        clearTerminal();
+
+        printf("Please choose your designated conversion:\n");
+        printf("[B] - Binary ---> Decimal\n");
+        printf("[D] - Decimal ---> Binary\n:: ");
+        scanf(" %c", &character);
+
+        if (character == 'B' || character == 'b') {
             clearTerminal();
             printf("Please enter a BINARY number to convert (00000000 - 11111111): "); // Asks for input
             scanf("%s", &inputString); // Keyword for input
+
+            decimalNumbers = 128;
 
             // Make program check if input has 8 characters
             if (strlen(inputString) == 8) {
 
                 for (int binaryCounter = 0; binaryCounter < 8; ++binaryCounter) {
-                    if (inputString[binaryCounter] == '0') {
-                        decimalNumbers /= 2; // 11110000
-                        continue;
-                    } else if (inputString[binaryCounter == '1']) {
-                        decimalNumbers += outputDecimal;
-                        decimalNumbers /= 2;
+                    if (inputString[binaryCounter] == '1') {
+                        outputDecimal += decimalNumbers;
                     }
+                    decimalNumbers /= 2;
                 };
                 clearTerminal();
                 printf("The decimal equivalent to [%s]\n", inputString);
@@ -61,11 +62,13 @@ int main() {
 
             // Make for loop to loop through and add the numbers together!
 
-        } else if (character == 'B' || 'b') {
+        } else if (character == 'D' || character == 'd') {
             clearTerminal();
             printf("Please enter a DECIMAL number to convert (1 - 255): "); // Asks for input
             scanf("%d", &inputNumber); // Keyword for input
             int number = inputNumber;
+
+            binaryNumbers = 128;
 
             if (number <= 255) { // If-statement where the magic happens
                 for (int binaryCounter = 0; binaryCounter < 8; ++binaryCounter) { // binaryCounter goes through all 8 digits of the binary table!
@@ -83,7 +86,7 @@ int main() {
                     printf("%d", binaryArray[i]);
                 }
                 printf("\n");
-                Sleep(8000);
+                Sleep(5000);
                 clearTerminal();
 
             } else { // If the number which was entered is higher than 255, the program will notify the user and loop back to the beginning!
