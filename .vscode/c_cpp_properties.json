@@ -3,7 +3,7 @@
     {
       "name": "windows-gcc-x86",
       "includePath": [
-        "${workspaceFolder}/**"
+        "C:/raylib/raylib/src/"
       ],
       "compilerPath": "C:/MinGW/bin/gcc.exe",
       "cStandard": "${default}",
@@ -15,4 +15,4 @@
     }
   ],
   "version": 4
-}
+} // ${workspaceFolder}/**
