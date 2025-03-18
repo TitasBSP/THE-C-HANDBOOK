@@ -49,8 +49,8 @@ int main() {
                     decimalNumbers /= 2;
                 };
                 clearTerminal();
-                printf("The decimal equivalent to [%s]\n", inputString);
-                printf("is: %d", outputDecimal); // Here's the prompt which the user will see
+                printf("The decimal equivalent to [%s]", inputString);
+                printf(" is: %d", outputDecimal); // Here's the prompt which the user will see
                 Sleep(5000);
 
             } else {
