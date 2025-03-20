@@ -72,10 +72,25 @@ int main()
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        // Update
         //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
+        // TO-DO LIST:
+        //
+        // o Get the user's input
+        //      o Make sure it is no more than 8 characters
+        //      o Can only be values of 0-255 in decimal, 0s and 1s in binary
+        //      o Store it in an array
+        // o Display the text
+        //      o USE DrawText!!!!!!!!!!!!!!!!
+        // o Add backspace support
+        //      o It will decrease the amount in the array
+        //      o Unshow the deleted characters
+        // o Add ENTER support
+        //      o When you press ENTER, it has to show the result in a new boolean condition
+        // o Display the result
+        //      o Reuse the logic from the terminal version
+        //      o Make it so that the user has to press enter to get back to main menu
         //----------------------------------------------------------------------------------
+
         
         // Draw
         //----------------------------------------------------------------------------------
