@@ -17,9 +17,8 @@
 
 #include "raylib.h"
 #include "stdio.h"
-
-#define BinaryInput 8
-#define DecimalInput 3
+#include "string.h"
+#include "stdlib.h"
 
 int main()
 {
@@ -55,6 +54,42 @@ int main()
     float TextDecimalY = 365;
     char TextDecimal[8] = "DECIMAL";
     
+    float windowBinaryX = 220;
+    float windowBinaryY = 250;
+    Rectangle windowBinary = {windowBinaryX, windowBinaryY, 500, 75};
+    
+    float convertBinaryX = 360;
+    float convertBinaryY = 360;
+    Rectangle convertBinary = {convertBinaryX, convertBinaryY, 200, 50};
+    
+    float alphaConvertBinary = 0.0f;
+    
+    float outputBinaryX = 360;
+    float outputBinaryY = 240;
+    Rectangle outputBinary = {outputBinaryX, outputBinaryY, 200, 75};
+    
+    float alphaOutputBinary = 0.0f;
+    
+    // ------------------- DECIMAL -------------------------- //
+
+    float windowDecimalX = 310;
+    float windowDecimalY = 250;
+    Rectangle windowDecimal = {windowDecimalX, windowDecimalY, 300, 75};
+    
+    float convertDecimalX = 360;
+    float convertDecimalY = 360;
+    Rectangle convertDecimal = {convertDecimalX, convertDecimalY, 200, 50};
+    
+    float alphaConvertDecimal = 0.0f;
+    
+    float outputDecimalX = 360;
+    float outputDecimalY = 240;
+    Rectangle outputDecimal = {outputDecimalX, outputDecimalY, 200, 75};
+    
+    float alphaOutputDecimal = 0.0f;
+    
+    // --------------------- MISCELLANEOUS ------------------------ //
+    
     char Copyright[64] = "© 2025 - Elevens";
     
     char title[64] = "Binary & Decimal Converter";
@@ -67,6 +102,26 @@ int main()
     
     bool displayBinary = false;
     bool displayDecimal = false;
+    
+    bool displayBinaryResult = false;
+    bool displayDecimalResult = false;
+    
+    char outputTextBinary[4];
+    char outputTextDecimal[9];
+    
+    //-------------------------------- Handling user input --------------------------------//
+    
+    char binaryInput[9] = "";
+    char decimalInput[4] = "";
+    int binaryLen = 0;
+    int decimalLen = 0;
+    
+    int binaryArray[8] = {0};
+    char resultDecimal[8] = "";
+    char stringConversionDecimal[3];
+    //-------------------------------------------------------------------------------------//
+    
+    
     //--------------------------------------------------------------------------------------
 
     // Main game loop
@@ -75,17 +130,6 @@ int main()
         //----------------------------------------------------------------------------------
         // TO-DO LIST:
         //
-        // o Get the user's input
-        //      o Make sure it is no more than 8 characters
-        //      o Can only be values of 0-255 in decimal, 0s and 1s in binary
-        //      o Store it in an array
-        // o Display the text
-        //      o USE DrawText!!!!!!!!!!!!!!!!
-        // o Add backspace support
-        //      o It will decrease the amount in the array
-        //      o Unshow the deleted characters
-        // o Add ENTER support
-        //      o When you press ENTER, it has to show the result in a new boolean condition
         // o Display the result
         //      o Reuse the logic from the terminal version
         //      o Make it so that the user has to press enter to get back to main menu
@@ -94,11 +138,114 @@ int main()
         
         // Draw
         //----------------------------------------------------------------------------------
+        int pressedKey = GetCharPressed();
+        
         Vector2 mousePos = GetMousePosition();
             
         bool isHoveringBinary = CheckCollisionPointRec(mousePos, ButtonBinary);
         bool isHoveringDecimal = CheckCollisionPointRec(mousePos, ButtonDecimal);
+        
+        bool isHoveringConvertBinary = CheckCollisionPointRec(mousePos, convertBinary);
+        bool isHoveringConvertDecimal = CheckCollisionPointRec(mousePos, convertDecimal);
+        
+///////////////////////////////////// BINARY //////////////////////////////
+        while (pressedKey > 0) {
+        
+            if (binaryLen < 8 && (pressedKey == '0' || pressedKey == '1')) {
+                binaryInput[binaryLen] = (char)pressedKey;
+                binaryLen++;
+                binaryInput[binaryLen] = '\0';
+                
+            }
+            pressedKey = GetCharPressed();
+        }
+        
+        if (IsKeyPressed(KEY_BACKSPACE) && binaryLen > 0) {
+            binaryLen--;
+            binaryInput[binaryLen] = '\0';
+        }
+        
+        if (IsKeyPressed(KEY_ENTER) && binaryLen == 8 || isHoveringConvertBinary && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && binaryLen == 8) {
+            int decimalNumbers = 128;
+            int outputDecimal = 0;
             
+            for (int binaryCounter = 0; binaryCounter < 8; ++binaryCounter) {
+                if (binaryInput[binaryCounter] == '1') {
+                    outputDecimal += decimalNumbers;
+                }
+                decimalNumbers /= 2;
+            };
+            displayBinaryResult = true;
+            sprintf(outputTextBinary, "%d", outputDecimal);
+            printf("%s", outputTextBinary);
+            fflush(stdout); // Debug to see working number
+            
+        }
+
+///////////////////////////////// DECIMAL ////////////////////////////////
+
+        while (pressedKey > 0) {
+        
+            if (decimalLen < 3 && pressedKey >= '0' && pressedKey <= '9') {
+                decimalInput[decimalLen] = (char)pressedKey;
+                decimalLen++;
+                decimalInput[decimalLen] = '\0';
+                
+            }
+            pressedKey = GetCharPressed();
+        }
+        
+        if (IsKeyPressed(KEY_BACKSPACE) && decimalLen > 0) {
+            decimalLen--;
+            decimalInput[decimalLen] = '\0';
+        }
+        
+        int decimalValue = atoi(decimalInput);  // Convert the string to an integer
+        
+        if ((IsKeyPressed(KEY_ENTER) && decimalLen < 3 && decimalLen > 0 && decimalValue <= 255 && decimalValue > 0) || 
+            (isHoveringConvertDecimal && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && decimalLen < 3 && decimalLen > 0 && decimalValue <= 255)) {           
+            
+            int binaryNumbers = 128;
+            memset(resultDecimal, 0, sizeof(resultDecimal));
+            
+            for (int binaryCounter = 0; binaryCounter < 8; ++binaryCounter) { // binaryCounter goes through all 8 digits of the binary table!
+                binaryArray[binaryCounter] = (decimalValue / binaryNumbers) ? 1 : 0;
+                if (binaryArray[binaryCounter]) {
+                    decimalValue -= binaryNumbers; // The current number is subtracted with the binary sequence number and the loop is repeated until binaryCounter goes up to 8
+                    }
+                    binaryNumbers /= 2; // If the inputNumber is indivisible by the current one, it will be divided by two
+            }
+            
+            for (int i = 0; i < 8; i++) {
+                resultDecimal[i] = binaryArray[i] + '0'; // Convert int to char ('0' or '1')
+            }
+            resultDecimal[8] = '\0'; // Null-terminate the string
+            
+            displayDecimalResult = true;
+            sprintf(outputTextDecimal, "%s", resultDecimal);
+            
+            printf("Result: %s", outputTextDecimal);
+            fflush(stdout); // Debug to see working number
+            
+            if (IsKeyPressed(KEY_SPACE)) {
+                displayBinaryResult = false;
+                displayDecimalResult = false;
+                displayBinary = false;
+                displayDecimal = false;
+                binaryLen = 0;
+                decimalLen = 0;
+                memset(binaryInput, 0, sizeof(binaryInput));
+                memset(decimalInput, 0, sizeof(decimalInput));
+                clearScreen = false;             
+            }
+            
+        }
+ 
+        
+        
+
+        
+        // ---------------------------- TITLE SCREEN ---------------------------- //
         if (isHoveringBinary && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             clearScreen = true;
             printf("Debug Working Here!\n");
@@ -111,13 +258,22 @@ int main()
             displayDecimal = true;
         }
         
-        char storeBinaryInput[BinaryInput + 1] = "";
-        char storeDecimalInput[DecimalInput + 1] = "";
+        // ---------------------------- BINARY ---------------------------- //
         
-        int Chars = 0;
-        
-        int BinaryChars = GetCharPressed();
-        int DecimalChars = GetCharPressed();
+        if (displayBinaryResult) {
+            if (IsKeyPressed(KEY_SPACE)) {
+                displayBinaryResult = false;
+                binaryLen = 0;  // Reset binary input length
+                decimalLen = 0;
+                memset(binaryInput, 0, sizeof(binaryInput));  // Clear the binary input
+                clearScreen = false;  // Show the title screen again      
+
+                alphaButtonBinary = 0.0f;
+                alphaButtonDecimal = 0.0f;
+                alphaConvertBinary = 0.0f;
+                alphaOutputBinary = 0.0f;
+            }
+        }
         
         BeginDrawing();
         ClearBackground(BLUE);
@@ -141,7 +297,6 @@ int main()
                 DrawText(Copyright, 360, 500, 20, Fade(WHITE, alphaButtonDecimal));
             }
            
-            
             if (isHoveringBinary) {
                 DrawRectangleRec(ButtonBinary, Fade(LIGHTGRAY, alphaButtonBinary));
                 DrawText(TextBinary, TextBinaryX, TextBinaryY, 50, Fade(BLACK, alphaButtonBinary));
@@ -157,12 +312,78 @@ int main()
                 DrawRectangleRec(ButtonDecimal, Fade(WHITE, alphaButtonDecimal));
                 DrawText(TextDecimal, TextDecimalX, TextDecimalY, 50, Fade(BLACK, alphaButtonBinary));
             }
+            
         } else if (displayBinary) {
-            ClearBackground(BLUE);
-            DrawText("Binary", 100, 100, 20, WHITE);
+            if (!displayBinaryResult) {
+                ClearBackground(BLUE);
+                if (alphaConvertBinary < 1.0f) alphaConvertBinary += 0.04f;
+                DrawText("Please enter a BINARY number to convert\n               (00000000 - 11111111)", 50, 100, 40, Fade(WHITE, alphaConvertBinary));
+                DrawRectangle(windowBinaryX+10, windowBinaryY+10, 500, 75, Fade(BLACK, alphaConvertBinary));
+                DrawRectangleRec(windowBinary, Fade(WHITE, alphaConvertBinary));
+                
+                DrawRectangle(convertBinaryX+10, convertBinaryY+10, 200, 50, Fade(BLACK, alphaConvertBinary));
+                DrawRectangleRec(convertBinary, Fade(WHITE, alphaConvertBinary));
+                
+                if (isHoveringConvertBinary) {
+                    DrawRectangle(convertBinaryX+10, convertBinaryY+10, 200, 50, Fade(BLACK, alphaConvertBinary));
+                    DrawRectangleRec(convertBinary, Fade(LIGHTGRAY, alphaButtonBinary));
+                }
+                
+                DrawText("CONVERT", 375, 370, 35, Fade(BLACK, alphaConvertBinary));
+                DrawText(binaryInput, 250, 260, 60, Fade(BLACK, alphaConvertBinary));
+                
+            } else if (displayBinaryResult) {
+                ClearBackground(BLUE);
+                
+                if (alphaOutputBinary < 1.0f) alphaOutputBinary += 0.08f;
+                DrawText("The binary equivalent to [              ] is", 80, 150, 40, Fade(WHITE, alphaOutputBinary));
+                DrawText(binaryInput, 630, 150, 40, Fade(RED, alphaOutputBinary));
+                
+                DrawRectangle(outputBinaryX+10, outputBinaryY+10, 200, 75, Fade(BLACK, alphaOutputBinary));
+                DrawRectangleRec(outputBinary, Fade(WHITE, alphaOutputBinary));
+                DrawText(outputTextBinary, 410, 250, 60, Fade(BLACK, alphaOutputBinary));
+                
+                DrawText("PRESS [SPACE] TO RETURN", 320, 400, 20, Fade(WHITE, alphaOutputBinary));
+                
+                
+            }
+            
         } else if (displayDecimal) {            
             ClearBackground(BLUE);
-            DrawText("Decimal", 100, 100, 20, WHITE);
+            
+            if (!displayDecimalResult) {
+                ClearBackground(BLUE);
+                if (alphaConvertDecimal < 1.0f) alphaConvertDecimal += 0.04f;
+                DrawText("Please enter a DECIMAL number to convert\n                       (1-255)", 30, 100, 40, Fade(WHITE, alphaConvertDecimal));
+                DrawRectangle(windowDecimalX+10, windowDecimalY+10, 300, 75, Fade(BLACK, alphaConvertDecimal));
+                DrawRectangleRec(windowDecimal, Fade(WHITE, alphaConvertDecimal));
+                
+                DrawRectangle(convertDecimalX+10, convertDecimalY+10, 200, 50, Fade(BLACK, alphaConvertDecimal));
+                DrawRectangleRec(convertDecimal, Fade(WHITE, alphaConvertDecimal));
+                
+                if (isHoveringConvertDecimal) {
+                    DrawRectangle(convertDecimalX+10, convertDecimalY+10, 200, 50, Fade(BLACK, alphaConvertDecimal));
+                    DrawRectangleRec(convertBinary, Fade(LIGHTGRAY, alphaButtonDecimal));
+                }
+                
+                DrawText("CONVERT", 375, 370, 35, Fade(BLACK, alphaConvertDecimal));
+                DrawText(decimalInput, 250, 260, 60, Fade(BLACK, alphaConvertDecimal));
+                
+            } else if (displayDecimalResult) {
+                ClearBackground(BLUE);
+                
+                if (alphaOutputDecimal < 1.0f) alphaOutputDecimal += 0.08f;
+                DrawText("The decimal equivalent to [        ] is", 80, 150, 40, Fade(WHITE, alphaOutputDecimal));
+                DrawText(decimalInput, 630, 150, 40, Fade(RED, alphaOutputDecimal));
+                
+                DrawRectangle(outputDecimalX+10, outputDecimalY+10, 200, 75, Fade(BLACK, alphaOutputDecimal));
+                DrawRectangleRec(outputDecimal, Fade(WHITE, alphaOutputDecimal));
+                DrawText(outputTextDecimal, 410, 250, 60, Fade(BLACK, alphaOutputDecimal));
+                
+                DrawText("PRESS [SPACE] TO RETURN", 320, 400, 20, Fade(WHITE, alphaOutputDecimal));
+                
+                
+            }
         }
             
 
